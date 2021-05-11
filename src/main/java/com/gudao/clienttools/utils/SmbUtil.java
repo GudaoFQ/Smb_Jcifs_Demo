@@ -77,6 +77,13 @@ public class SmbUtil {
 
     }
 
+    /**
+     * 文件目录
+     *
+     * @param smbFile smb信息
+     * @return {@link SmbFile[]}
+     * @throws IOException ioexception
+     */
     public static SmbFile[] dirList(SmbFile smbFile) throws IOException {
         SmbFile[] smbFiles = null;
         // 文件与文件夹信息读取
