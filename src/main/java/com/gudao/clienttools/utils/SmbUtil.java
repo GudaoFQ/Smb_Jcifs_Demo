@@ -1,7 +1,11 @@
 package com.gudao.clienttools.utils;
 
 import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbAuthException;
+import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +18,7 @@ import java.io.OutputStream;
  * @Description:
  */
 public class SmbUtil {
+    private static final Logger log = LoggerFactory.getLogger(SmbUtil.class);
 
     static {
         //设置连接共享密码
@@ -88,7 +93,11 @@ public class SmbUtil {
         SmbFile[] smbFiles = null;
         // 文件与文件夹信息读取
         if (smbFile.isDirectory()) {
-            smbFiles = smbFile.listFiles();
+            try {
+                smbFiles = smbFile.listFiles();
+            } catch (SmbAuthException e) {
+                log.info("【文件加权限未对当前用户开放：{}】", smbFile.getCanonicalPath());
+            }
         } else {
             smbFiles = new SmbFile[]{smbFile};
         }

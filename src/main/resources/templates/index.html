@@ -1,0 +1,100 @@
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+    <title>文件树目录</title>
+    <script type="text/javascript" th:src="@{/plugin/zTree_v3-3.5.42/js/jquery-1.4.4.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/plugin/zTree_v3-3.5.42/css/zTreeStyle/zTreeStyle.css}">
+    <script type="text/javascript" th:src="@{/plugin/zTree_v3-3.5.42/js/jquery.ztree.all.js}"></script>
+    <style>
+        .level2 a
+        {
+            color:red
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="treeDemo" class="ztree"></ul>
+    <script>
+
+        //设置
+        var setting = {
+            data: {
+                key: {
+                    title: "t",
+                    name: "name"
+                },
+                view:{
+                    fontCss:setFontCss  
+                },
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "pId",
+                    rootPId: 0
+                }
+            },
+            callback: {
+                beforeClick: beforeClick,
+                onClick: onClick,
+
+            }
+
+        };
+        function setFontCss(treeId,treeNode){
+            return node.font ? node.font : {};
+        }
+
+        //数据  id和pId是做父子判定的  name是显示的文字,其余的就无所谓了  
+        //如果后台传来的数据没有这些要自己手动处理添加,
+        //肯定会有类似父子这样的关系，只是可能不是id和pId而已，比如我的就不是，而是parentCode 和 orgCode
+        
+        $(document).ready(function () {
+            
+            $.ajax({
+                type:'POST',
+                url:'/smdClient/dirList',
+                data: {
+                    "pathAndUserName": "192.168.0.?/test",// ip地址/用户名
+                    "password": "123456",// 用户密码
+                    "path": "",
+                    "isReadUserFiles": ""
+                },
+                dataType:'json',
+                success:function(data){
+                    $.fn.zTree.init($("#treeDemo"), setting, data);
+                },
+                error:function(error){
+                    console.log(error);
+                }
+            })
+            
+        });
+
+        var log, className = "dark";
+        function beforeClick(treeId, treeNode, clickFlag) {
+            className = (className === "dark" ? "" : "dark");
+            showLog("[ " + getTime() + " beforeClick ]&nbsp;&nbsp;" + treeNode.name);
+            return (treeNode.click != false);
+        }
+        function onClick(event, treeId, treeNode, clickFlag) {
+            showLog("[ " + getTime() + " onClick ]&nbsp;&nbsp;clickFlag = " + clickFlag + " (" + (clickFlag === 1 ? "普通选中" : (clickFlag === 0 ? "<b>取消选中</b>" : "<b>追加选中</b>")) + ")");
+        }
+        function showLog(str) {
+            if (!log) log = $("#log");
+            log.append("<li class='" + className + "'>" + str + "</li>");
+            if (log.children("li").length > 8) {
+                log.get(0).removeChild(log.children("li")[0]);
+            }
+        }
+        function getTime() {
+            var now = new Date(),
+                h = now.getHours(),
+                m = now.getMinutes(),
+                s = now.getSeconds();
+            return (h + ":" + m + ":" + s);
+        }
+    </script>
+</body>
+
+</html>

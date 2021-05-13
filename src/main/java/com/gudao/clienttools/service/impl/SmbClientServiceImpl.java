@@ -51,14 +51,19 @@ public class SmbClientServiceImpl implements SmbClientService {
                 infos.add(info);
                 // 如果是文件夹，继续遍历（如果是用户信息文件夹此处不会遍历）
                 if(smbFiles[i].isDirectory() && !"Users".equals(info.getGroup())){
-                    dirList(info.getDirList(),info.getPath().substring(info.getPath().indexOf(info.getGroup())),shareParam);
+                    dirList(info.getChildren(),info.getPath().substring(info.getPath().indexOf(info.getGroup())),shareParam);
                 }
                 // 用户如果选择遍历用户文件，下面方法执行
                 if(shareParam.getIsReadUserFiles() && "Users".equals(info.getGroup())){
-                    dirList(info.getDirList(), info.getPath().substring(info.getPath().indexOf(info.getGroup())),shareParam);
+                    dirList(info.getChildren(), info.getPath().substring(info.getPath().indexOf(info.getGroup())),shareParam);
                 }
             }
         }
+        infos.forEach(e -> {
+            if(0 == e.getChildren().size() && !e.getName().equals(e.getGroup()) && !e.isDirectory()){
+                e.setChildren(null);
+            }
+        });
         return infos;
     }
 
@@ -70,6 +75,13 @@ public class SmbClientServiceImpl implements SmbClientService {
      * @throws SmbException smb异常
      */
     private DirInfo toDirInfo(SmbFile smbFile) throws SmbException {
+        String allPath = smbFile.getCanonicalPath(),name="";
+        if(allPath.endsWith("/")){
+            name = smbFile.getCanonicalPath().substring(smbFile.getCanonicalPath().substring(0,smbFile.getCanonicalPath().lastIndexOf("/")).lastIndexOf("/")+1,smbFile.getCanonicalPath().lastIndexOf("/"));
+        }else {
+            name = smbFile.getCanonicalPath().substring(smbFile.getCanonicalPath().lastIndexOf("/")+1);
+        }
+
         return new DirInfo(
                 // 文件全路径
                 smbFile.getUncPath().replaceAll("\\\\","/"),
@@ -78,7 +90,7 @@ public class SmbClientServiceImpl implements SmbClientService {
                 smbFile.isDirectory(),
                 smbFile.getLastModified(),
                 // 文件名称
-                smbFile.getCanonicalPath().substring(smbFile.getCanonicalPath().lastIndexOf("/")+1),
+                name,
                 0,
                 null,
                 // 最外层共享文件夹名称

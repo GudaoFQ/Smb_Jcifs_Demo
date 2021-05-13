@@ -1,5 +1,7 @@
 package com.gudao.clienttools.model;
 
+import com.sun.istack.internal.NotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +45,7 @@ public class DirInfo {
     /**
      * 文件夹/文件名
      */
-    private String fileName;
+    private String name;
     /**
      * 权限
      */
@@ -63,7 +65,7 @@ public class DirInfo {
     /**
      * 文件夹中的目录
      */
-    private List dirList = new ArrayList();
+    private List children = new ArrayList();
 
     /**
      * 构建一个文件视图
@@ -72,18 +74,18 @@ public class DirInfo {
      * @param length           文件大小
      * @param isDirectory      是否是目录
      * @param lastModifiedTime 最后修改时间
-     * @param fileName         最后访问时间
+     * @param name             文件名称
      * @param permissions      权限掩码
      * @param owner            拥有者
      * @param group            所属组
      * @param symlink          符号链接对应的真实路径
      */
-    public DirInfo(String path, long length, boolean isDirectory, long lastModifiedTime, String fileName, int permissions, String owner, String group, String symlink) {
+    public DirInfo(String path, long length, boolean isDirectory, long lastModifiedTime, String name, int permissions, String owner, String group, String symlink) {
         this.path = path;
         this.length = length;
         this.isDirectory = isDirectory;
         this.lastModifiedTime = lastModifiedTime;
-        this.fileName = fileName;
+        this.name = name;
         this.permissions = permissions;
         this.owner = owner;
         this.group = group;
@@ -124,8 +126,8 @@ public class DirInfo {
     /**
      * 获取当前文件的最后访问时间
      */
-    public String getFileName() {
-        return fileName;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -156,12 +158,12 @@ public class DirInfo {
         return symlink;
     }
 
-    public List getDirList() {
-        return dirList;
+    public List getChildren() {
+        return children;
     }
 
-    public void setDirList(List dirList) {
-        this.dirList = dirList;
+    public void setChildren(List children) {
+        this.children = children;
     }
 
     /**
@@ -205,8 +207,8 @@ public class DirInfo {
                 .append(isDirectory);
         sb.append(",\"lastModifiedTime\":")
                 .append(lastModifiedTime);
-        sb.append(",\"fileName\":")
-                .append(fileName);
+        sb.append(",\"name\":")
+                .append(name);
         sb.append(",\"permissions\":")
                 .append(permissions);
         sb.append(",\"owner\":\"")
