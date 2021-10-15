@@ -1,7 +1,5 @@
 package com.gudao.clienttools.model;
 
-import com.sun.istack.internal.NotNull;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
